@@ -89,23 +89,25 @@ bool split_parallel_commands(const string &line, vector<string> &segments) {
     segments.clear();
 
     string current;
-    bool saw_ampersand = false;
 
     for (char c : line) {
         if (c == '&') {
             string piece = trim(current);
-            if (piece.empty()) return false;
-            segments.push_back(piece);
+
+            // ignore empty pieces like a line that is just "&"
+            if (!piece.empty()) {
+                segments.push_back(piece);
+            }
+
             current.clear();
-            saw_ampersand = true;
         } else {
             current += c;
         }
     }
 
     string last = trim(current);
-    if (saw_ampersand && last.empty()) return false;
 
+    // keep the final command if there is one
     if (!last.empty()) {
         segments.push_back(last);
     }
