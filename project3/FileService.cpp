@@ -34,17 +34,30 @@ bool FileService::endswith(string str, string suffix) {
 }
 
 void FileService::get(HTTPRequest *request, HTTPResponse *response) {
+
   string path = this->m_basedir + request->getPath();
-  string fileContents = this->readFile(path);
-  if (fileContents.size() == 0) {
+
+  if (path.find("..") != string::npos) {
     response->setStatus(403);
     return;
+  }
+
+  string fileContents = this->readFile(path);
+
+  if (fileContents.size() == 0) {
+
+    response->setStatus(403);
+    return;
+
   } else {
+
     if (this->endswith(path, ".css")) {
       response->setContentType("text/css");
+
     } else if (this->endswith(path, ".js")) {
       response->setContentType("text/javascript");
     }
+
     response->setBody(fileContents);
   }
 }
